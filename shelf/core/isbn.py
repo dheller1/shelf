@@ -28,15 +28,3 @@ class ISBN:
     def digits(self):
         """ Returns the ISBN in a digit-only representation (a string of 10 or 13 digits). """
         return re.sub('[ -]', '', self._isbn)
-
-
-if __name__ == '__main__':
-    test_str = ("foo\n"
-                "bar\n"
-                "bazbazbaz\n"
-                "quuuuuuuuuuuuuuuxx ISBN 978-1-80107-931-0\n"
-                "lorem ipsum")
-
-    test = ISBN.find(test_str)
-    print(test)
-    print(test.digits())
