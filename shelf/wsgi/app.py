@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template
+from flask import Flask, redirect, render_template, request, url_for
 from flask_sqlalchemy import SQLAlchemy
 
 _basedir = os.path.abspath(os.path.dirname(__file__))
@@ -40,3 +40,25 @@ def view_list():
 def view_book(book_id):
     book = Book.query.get_or_404(book_id)
     return render_template('book.html', book=book)
+
+@app.route('/edit/<int:book_id>')
+def view_edit(book_id):
+    book = Book.query.get_or_404(book_id)
+    return render_template('edit.html', book=book)
+
+@app.route('/save', methods=('POST', ))
+def do_save():
+    if request.method == 'POST':
+        id = request.form['book_id']
+        book = Book.query.get_or_404(id)
+        t = request.form['title']
+        st = request.form['subtitle']
+        ed = request.form['edition']
+
+        book.title = t
+        book.subtitle = st
+        book.edition = ed
+
+        db.session.add(book)
+        db.session.commit()
+        return redirect(url_for('view_book', book_id=id))

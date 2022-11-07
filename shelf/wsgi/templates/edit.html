@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h3>{% block title %} Book details {% endblock %}</h3>
+<a href="{{ url_for('view_book', book_id=book.id) }}">back</a>
+
+<form action="{{ url_for('do_save') }}" method="POST">
+    <input type="hidden" name="book_id" value="{{ book.id }}" />
+	<table>
+		<tr>
+			<td valign="top"><b>Title:</b></td>
+			<td><input type="text" name="title" size="80" value="{{ book.title}}" /></td>
+		</tr>
+		<tr>
+			<td valign="top">Subitle:</td>
+			<td><textarea name="subtitle" rows="2" cols="80">{{ book.subtitle }}</textarea></td>
+		</tr>
+		<tr>
+			<td valign="top">Edition:</td>
+			<td><input type="text" name="edition" size="80" value="{{ book.edition }}" /></td>
+		</tr>
+	</table>
+	<div><input type="submit" value="Save" /></div>
+</form>
+
+{% endblock %}
