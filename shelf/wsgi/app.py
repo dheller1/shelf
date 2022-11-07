@@ -32,6 +32,11 @@ class Book(db.Model):
 
 
 @app.route('/list')
-def index():
+def view_list():
     books = Book.query.all()
     return render_template('list.html', books=books)
+
+@app.route('/book/<int:book_id>')
+def view_book(book_id):
+    book = Book.query.get_or_404(book_id)
+    return render_template('book.html', book=book)
