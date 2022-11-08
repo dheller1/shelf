@@ -1,6 +1,7 @@
 import flask
 from PyPDF2 import PdfReader
 import os
+import requests
 
 from shelf.core.isbn import ISBN
 from shelf.db import Book, db
@@ -37,6 +38,12 @@ def add_book(db, request):
         file.save(os.path.join(target_dir, file.filename))
 
         isbn = _find_isbn_in_pdf(os.path.join(target_dir, file.filename))
+        if isbn:
+            info_json = _get_book_info(isbn)
+            if info_json:
+                _fill_book_info_from_json(new_book, info_json)
+                db.session.add(new_book)
+                db.session.commit()
 
         return new_book
     return None
@@ -50,3 +57,16 @@ def _find_isbn_in_pdf(filename):
         if isbn:
             return isbn
     return None
+
+
+def _get_book_info(isbn):
+    url = f'https://openlibrary.org/isbn/{isbn.digits()}.json'
+    r = requests.get(url)
+    if r.status_code == 200:
+        return r.json()
+    return None
+
+
+def _fill_book_info_from_json(book, json):
+    book.title = json.get('title', '')
+    book.subtitle = json.get('subtitle', '')
