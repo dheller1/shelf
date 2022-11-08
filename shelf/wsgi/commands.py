@@ -2,6 +2,7 @@ import flask
 from PyPDF2 import PdfReader
 import os
 
+from shelf.core.isbn import ISBN
 from shelf.db import Book, db
 
 
@@ -35,10 +36,17 @@ def add_book(db, request):
             os.mkdir(target_dir)
         file.save(os.path.join(target_dir, file.filename))
 
+        isbn = _find_isbn_in_pdf(os.path.join(target_dir, file.filename))
+
         return new_book
     return None
 
 
-def _parse_pdf(filename):
+def _find_isbn_in_pdf(filename):
     reader = PdfReader(filename)
-    pass
+    for p in reader.pages:
+        text = p.extract_text()
+        isbn = ISBN.find(text)
+        if isbn:
+            return isbn
+    return None
