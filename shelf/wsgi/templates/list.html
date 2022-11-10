@@ -18,7 +18,11 @@
 				<br><small>{{ book.subtitle }}</small>
 			</span>
 		</td>
-        <td><!-- Authors --></td>
+        <td>
+			{% for author in book.authors %}
+			<div>{{ author.name }}</div>
+			{% endfor %}
+		</td>
 		<td>{{ book.edition }}</td>
 	</tr>
     {% endfor %}

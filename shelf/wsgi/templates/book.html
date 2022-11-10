@@ -7,6 +7,13 @@
 
 <h2>{{ book.title }}</h2>
 <h4>{{ book.subtitle }}</h4>
+
+<p><div>written by:</div></p>
+{% for author in book.authors %}
+<div><u>{{ author.name }}</u></div>
+{% endfor %}
+
+
 <span>{{ book.edition }}</span>
 
 {% endblock %}

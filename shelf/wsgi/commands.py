@@ -4,8 +4,7 @@ import os
 import requests
 
 from shelf.core.isbn import ISBN
-from shelf.db import Book, db
-
+from shelf.db import Book, db, Author
 
 UPLOAD_FOLDER = os.path.join(os.getenv('USERPROFILE'), 'shelf', 'uploads')
 
@@ -67,6 +66,38 @@ def _get_book_info(isbn):
     return None
 
 
+def _get_author_info(url):
+    url = f'https://openlibrary.org{url}.json' # e.g. https://openlibrary.org/authors/OL371447A.json
+    r = requests.get(url)
+    if r.status_code == 200:
+        return r.json()
+    return None
+
+
+def _get_or_create_author(name):
+    existing = Author.query.filter_by(name=name).first()
+    if existing:
+        print(f'Found existing author {existing.name}.')
+        return existing
+    a = Author(name=name)
+    print(f'Added author {name}.')
+    db.session.add(a)
+    db.session.commit()
+    return a
+
+
 def _fill_book_info_from_json(book, json):
     book.title = json.get('title', '')
     book.subtitle = json.get('subtitle', '')
+
+    authors = []
+    for author in json.get('authors', []):
+        # author should be a dict such as follows: {'key': '/authors/OL9082259A'}
+        author_url = author['key']
+        info = _get_author_info(author_url)
+        if info:
+            name = info.get('name', '')
+            if name:
+                authors.append(_get_or_create_author(name))
+
+    book.authors = authors
