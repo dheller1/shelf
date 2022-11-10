@@ -19,10 +19,10 @@ db.init_app(app)
 def view_add():
     if request.method == 'POST':
         b = commands.add_book(db, request)
-        if b is None:
-            return render_template('add.html')
+        if b is not None:
+            return redirect(url_for('view_edit', book_id=b.id))
         else:
-            return redirect(url_for('view_book', book_id=b.id))
+            return render_template('add.html')
     else:
         return render_template('add.html')
 
