@@ -18,7 +18,7 @@ db.init_app(app)
 @app.route('/add', methods=('GET', 'POST'))
 def view_add():
     if request.method == 'POST':
-        b = commands.add_book(db, request)
+        b = commands.add_book(db, request, app.logger)
         if b is not None:
             return redirect(url_for('view_edit', book_id=b.id))
         else:

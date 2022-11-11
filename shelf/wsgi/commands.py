@@ -9,7 +9,7 @@ from shelf.db import Book, db, Author
 UPLOAD_FOLDER = os.path.join(os.getenv('USERPROFILE'), 'shelf', 'uploads')
 
 
-def add_book(db, request):
+def add_book(db, request, logger=None):
     if 'book_file' not in request.files:
         flask.flash('No file!')
         flask.redirect(request.url)
@@ -38,9 +38,10 @@ def add_book(db, request):
 
         isbn = _find_isbn_in_pdf(os.path.join(target_dir, file.filename))
         if isbn:
+            new_book.isbn = isbn.digits()
             info_json = _get_book_info(isbn)
             if info_json:
-                _fill_book_info_from_json(new_book, info_json)
+                _fill_book_info_from_json(new_book, info_json, logger)
                 db.session.add(new_book)
                 db.session.commit()
 
@@ -86,9 +87,26 @@ def _get_or_create_author(name):
     return a
 
 
-def _fill_book_info_from_json(book, json):
+def _fill_book_info_from_json(book, json, logger):
+    book.full_info = str(json)
     book.title = json.get('title', '')
     book.subtitle = json.get('subtitle', '')
+    pub = json.get('publishers', [])
+    if pub:
+        book.publisher = pub[0]
+
+    try:
+        book.published_year = int(json['publish_date'])
+    except:
+        book.published_year = None
+
+    try:
+        isbn = json['isbn_13'][0]
+    except:
+        pass
+    else:
+        if isbn != book.isbn and logger:
+            logger.warning(f'Book ISBN does not match: {book.isbn} (from PDF) vs {isbn} (openlibrary)')
 
     authors = []
     for author in json.get('authors', []):
@@ -99,5 +117,4 @@ def _fill_book_info_from_json(book, json):
             name = info.get('name', '')
             if name:
                 authors.append(_get_or_create_author(name))
-
     book.authors = authors
