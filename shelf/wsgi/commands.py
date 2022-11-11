@@ -25,7 +25,7 @@ def add_book(db, request, logger=None):
 
     ext = os.path.splitext(file.filename)[1].lower()
     if file and ext == '.pdf':
-        new_book = Book(title='TEMP_UNKNOWN')
+        new_book = Book(title='TEMP_UNKNOWN', filename=file.filename)
         db.session.add(new_book)
         db.session.commit()
 

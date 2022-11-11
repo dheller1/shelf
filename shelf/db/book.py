@@ -13,6 +13,8 @@ class Book(db.Model):
 
     full_info = db.Column(db.String(2000), default='')  # the full json info string
 
+    filename = db.Column(db.String(200), default='')  # filename of the PDF
+
     authors = db.relationship('Author', secondary=written_by, lazy='subquery', backref=db.backref('books', lazy=True))
 
 
