@@ -3,8 +3,6 @@
 {% block content %}
 <h3>{% block title %} List of Books {% endblock %}</h3>
 
-</p>
-
 <table border="1">
 	<tr>
 		<td><b>Title</b></td>
@@ -14,9 +12,21 @@
 	{% for book in books %}
 	<tr>
 		<td>
-			<span><a href="{{ url_for('view_book', book_id=book.id) }}">{{ book.title }}</a>
-				<br><small>{{ book.subtitle }}</small>
-			</span>
+			<table border="0">
+				<tr>
+					<td rowspan="2" align="center">
+						{% if book.is_file_available %}
+						<a href="{{ url_for('view_file', book_id=book.id) }}" >
+							<img src="{{ url_for('static', filename='pdf_icon_24.png') }}" height="24" />
+						</a>
+						{% endif %}
+					</td>
+					<td><a href="{{ url_for('view_book', book_id=book.id) }}">{{ book.title }}</a></td>
+				</tr>
+				<tr>
+					<td><small>{{ book.subtitle }}</small></td>
+				</tr>
+			</table>
 		</td>
         <td>
 			{% for author in book.authors %}

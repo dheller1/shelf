@@ -1,5 +1,9 @@
+import os
+
 from . import db
 from .written_by import written_by
+
+from shelf.core.constants import UPLOAD_FOLDER
 
 class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -20,3 +24,15 @@ class Book(db.Model):
 
     def __repr__(self):
         return f'Book({self.title})'
+
+    def upload_dir(self):
+        return os.path.join(UPLOAD_FOLDER, str(self.id))
+
+    def abs_filepath(self):
+        if self.filename:
+            return os.path.join(self.upload_dir(), self.filename)
+        return ''
+
+    @property
+    def is_file_available(self):
+        return os.path.isfile(self.abs_filepath())

@@ -3,10 +3,9 @@ from PyPDF2 import PdfReader
 import os
 import requests
 
+from shelf.core.constants import UPLOAD_FOLDER
 from shelf.core.isbn import ISBN
 from shelf.db import Book, db, Author
-
-UPLOAD_FOLDER = os.path.join(os.getenv('USERPROFILE'), 'shelf', 'uploads')
 
 
 def add_book(db, request, logger=None):

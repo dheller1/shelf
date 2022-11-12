@@ -1,5 +1,5 @@
 import os
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, send_file, redirect, render_template, request, url_for
 
 from shelf.db import db
 
@@ -39,6 +39,14 @@ def view_book(book_id):
 @app.route('/edit/<int:book_id>')
 def view_edit(book_id):
     book = Book.query.get_or_404(book_id)
+    return render_template('edit.html', book=book)
+
+@app.route('/file/<int:book_id>')
+def view_file(book_id):
+    book = Book.query.get_or_404(book_id)
+    path = book.abs_filepath()
+    if path and os.path.isfile(path):
+        return send_file(path, download_name=book.filename)
     return render_template('edit.html', book=book)
 
 @app.route('/save', methods=('POST', ))
