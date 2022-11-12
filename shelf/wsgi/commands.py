@@ -22,9 +22,9 @@ def add_book(db, request, logger=None):
         flask.redirect(request.url)
         return None
 
-    ext = os.path.splitext(file.filename)[1].lower()
-    if file and ext == '.pdf':
-        new_book = Book(title='TEMP_UNKNOWN', filename=file.filename)
+    base, ext = os.path.splitext(file.filename)
+    if file and ext.lower() == '.pdf':
+        new_book = Book(title=base, filename=file.filename)
         db.session.add(new_book)
         db.session.commit()
 
@@ -74,18 +74,6 @@ def _get_author_info(url):
     return None
 
 
-def _get_or_create_author(name):
-    existing = Author.query.filter_by(name=name).first()
-    if existing:
-        print(f'Found existing author {existing.name}.')
-        return existing
-    a = Author(name=name)
-    print(f'Added author {name}.')
-    db.session.add(a)
-    db.session.commit()
-    return a
-
-
 def _fill_book_info_from_json(book, json, logger):
     book.full_info = str(json)
     book.title = json.get('title', '')
@@ -115,5 +103,5 @@ def _fill_book_info_from_json(book, json, logger):
         if info:
             name = info.get('name', '')
             if name:
-                authors.append(_get_or_create_author(name))
+                authors.append(Author.get_or_create(name))
     book.authors = authors

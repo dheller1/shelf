@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>{{ book.title }}</h2>
+
+<div style="color:red;font-weight:bold">No file exists for this book!</div>
+<div>[<a href="{{ url_for('view_list') }}">All books</a>]
+  [<a href="{{ url_for('view_edit', book_id=book.id) }}">Edit book</a>]</div>
+
+
+{% endblock %}

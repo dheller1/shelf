@@ -17,7 +17,7 @@
 					<td rowspan="2" align="center">
 						{% if book.is_file_available %}
 						<a href="{{ url_for('view_file', book_id=book.id) }}" >
-							<img src="{{ url_for('static', filename='pdf_icon_24.png') }}" height="24" />
+							<img src="{{ url_for('static', filename='pdf_icon.svg') }}" height="24" />
 						</a>
 						{% endif %}
 					</td>

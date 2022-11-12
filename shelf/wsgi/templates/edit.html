@@ -12,8 +12,14 @@
 			<td><input type="text" name="title" size="80" value="{{ book.title}}" /></td>
 		</tr>
 		<tr>
-			<td valign="top">Subitle:</td>
+			<td valign="top">Subtitle:</td>
 			<td><textarea name="subtitle" rows="2" cols="80">{{ book.subtitle }}</textarea></td>
+		</tr>
+		<tr>
+			<td valign="top">Author(s):</td>
+			<td><textarea name="authors" rows="3" cols="80">{% for author in book.authors %}{{author.name}}
+{% endfor %}</textarea><br />
+			<small>(separate by newline, comma, or semicolon)</small></td>
 		</tr>
 		<tr>
 			<td valign="top">Edition:</td>
