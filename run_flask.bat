@@ -1,0 +1,1 @@
+flask --app shelf\wsgi\app.py run --host 0.0.0.0
