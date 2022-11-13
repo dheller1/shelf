@@ -1,4 +1,5 @@
 from . import db
+from sqlalchemy import func
 
 
 class Tag(db.Model):
@@ -10,7 +11,7 @@ class Tag(db.Model):
 
     @staticmethod
     def get_or_create(name):
-        existing = Tag.query.filter_by(name=name).first()
+        existing = Tag.query.filter(func.lower(Tag.name) == func.lower(name)).first()
         if existing:
             return existing
         t = Tag(name=name)

@@ -1,7 +1,7 @@
 import os
 from flask import Flask, send_file, redirect, render_template, request, url_for
 
-from shelf.db import db, Author
+from shelf.db import db, Author, Tag
 
 from . import commands
 from shelf.db.book import Book
@@ -69,7 +69,10 @@ def do_save():
         author_str = author_str.replace(',', '\n')
         author_str = author_str.replace(';', '\n')
         authors = [a.strip() for a in author_str.split('\n')]
-        print(authors)
+
+        tags = [t.strip() for t in request.form['tags'].splitlines()]
+        book.tags = [Tag.get_or_create(t) for t in tags if t != '']
+
         book.title = t
         book.subtitle = st
         book.edition = ed
