@@ -4,16 +4,35 @@
 <h3>{% block title %} Book details {% endblock %}</h3>
 [<a href="{{ url_for('view_edit', book_id=book.id) }}">Edit</a>]
 
+<table>
+<tr>
+    <td align="center" valign="center">
+        {% if book.is_thumbnail_available and book.is_file_available %}
+        <a href="{{ url_for('view_file', book_id=book.id) }}" >
+            <img src="{{ url_for('view_thumbnail', book_id=book.id) }}" />
+        </a>
+        {% elif book.is_thumbnail_available and not book.is_file_available %}
+        <img src="{{ url_for('view_thumbnail', book_id=book.id) }}" />
+        {% elif not book.is_thumbnail_available and book.is_file_available %}
+        <a href="{{ url_for('view_file', book_id=book.id) }}" >
+            <img src="{{ url_for('static', filename='pdf_icon.svg') }}" height="256" />
+        </a>
+        {% else %}
+        <i>NO FILE AVAILABLE</i>
+        {% endif %}
+    </td>
+    <td>
+        <h2>{{ book.title }}</h2>
+        <h4>{{ book.subtitle }}</h4>
+        <p><div>written by:</div></p>
+        {% for author in book.authors %}
+        <div><u>{{ author.name }}</u></div>
+        {% endfor %}
 
-<h2>{{ book.title }}</h2>
-<h4>{{ book.subtitle }}</h4>
+        <p>{{ book.edition }}</p>
+    </td>
+</tr>
 
-<p><div>written by:</div></p>
-{% for author in book.authors %}
-<div><u>{{ author.name }}</u></div>
-{% endfor %}
-
-
-<span>{{ book.edition }}</span>
+</table>
 
 {% endblock %}

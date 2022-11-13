@@ -1,3 +1,5 @@
+import subprocess
+
 import flask
 from PyPDF2 import PdfReader
 import os
@@ -26,14 +28,24 @@ def add_book(db, request, logger=None):
     if file and ext.lower() == '.pdf':
         new_book = Book(title=base, filename=file.filename)
         db.session.add(new_book)
-        db.session.commit()
+        db.session.commit()  # commit here to generate ID
 
         id = new_book.id
         print('added new book with id:', id)
         target_dir = os.path.join(UPLOAD_FOLDER, str(id))
         if not os.path.isdir(target_dir):
             os.mkdir(target_dir)
-        file.save(os.path.join(target_dir, file.filename))
+
+        fullpath = os.path.join(target_dir, file.filename)
+        file.save(fullpath)
+
+        fullbase, _ = os.path.splitext(fullpath)
+        thumb_file = fullbase + '.png'
+        thumb_success = _generate_thumbnail(fullpath, thumb_file)
+        if thumb_success and os.path.isfile(thumb_file):
+            new_book.thumb_filename = thumb_file
+            db.session.add(new_book)
+            db.session.commit()
 
         isbn = _find_isbn_in_pdf(os.path.join(target_dir, file.filename))
         if isbn:
@@ -72,6 +84,19 @@ def _get_author_info(url):
     if r.status_code == 200:
         return r.json()
     return None
+
+
+def _generate_thumbnail(source_path, target_path, logger=None):
+    """ Generates a .png thumbnail from the first page of the given PDF file. """
+    max_size = '240x320'
+    cmdline = f'magick convert -adaptive-resize {max_size} {source_path}[0] {target_path}'
+    try:
+        subprocess.check_call(cmdline)
+        return True
+    except subprocess.CalledProcessError as e:
+        if logger:
+            logger.warning('Failed to generate thumbnail: ' + str(e))
+        return False
 
 
 def _fill_book_info_from_json(book, json, logger):

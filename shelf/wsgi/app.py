@@ -47,7 +47,14 @@ def view_file(book_id):
     path = book.abs_filepath()
     if path and os.path.isfile(path):
         return send_file(path, download_name=book.filename)
-    return render_template('edit.html', book=book)
+    return render_template('missing_file.html', book=book)
+
+@app.route('/thumbnail/<int:book_id>')
+def view_thumbnail(book_id):
+    book = Book.query.get_or_404(book_id)
+    path = book.abs_thumbnail_path()
+    if path and os.path.isfile(path):
+        return send_file(path, download_name=book.thumb_filename)
 
 @app.route('/save', methods=('POST', ))
 def do_save():
