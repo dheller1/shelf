@@ -1,6 +1,7 @@
 import os
 
 from . import db
+from .tagged_with import tagged_with
 from .written_by import written_by
 
 from shelf.core.constants import UPLOAD_FOLDER
@@ -21,7 +22,7 @@ class Book(db.Model):
     thumb_filename = db.Column(db.String(200), default='')  # filename of the thumbnail image
 
     authors = db.relationship('Author', secondary=written_by, lazy='subquery', backref=db.backref('books', lazy=True))
-
+    tags = db.relationship('Tag', secondary=tagged_with, lazy='subquery', backref=db.backref('books', lazy=True))
 
     def __repr__(self):
         return f'Book({self.title})'
