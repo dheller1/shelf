@@ -14,7 +14,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 
-
 @app.route('/add', methods=('GET', 'POST'))
 def view_add():
     if request.method == 'POST':
@@ -30,6 +29,13 @@ def view_add():
 def view_list():
     books = Book.query.all()
     return render_template('list.html', books=books)
+
+@app.route('/tags')
+def view_tags():
+    tags = Tag.query.all()
+    for t in tags:
+        print(len(t.books))
+    return render_template('tags.html', tags=tags)
 
 @app.route('/book/<int:book_id>')
 def view_book(book_id):
