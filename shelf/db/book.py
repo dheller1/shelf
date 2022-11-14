@@ -16,8 +16,6 @@ class Book(db.Model):
 
     isbn = db.Column(db.String(13), default='')  # only the digits, which should be either 10 or 13 digits
 
-    full_info = db.Column(db.String(2000), default='')  # the full json info string
-
     filename = db.Column(db.String(200), default='')  # filename of the PDF
     thumb_filename = db.Column(db.String(200), default='')  # filename of the thumbnail image
 

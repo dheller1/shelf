@@ -93,7 +93,6 @@ def _generate_thumbnail(source_path, target_path, logger=None):
 
 
 def _fill_book_info_from_json(book, json, logger):
-    book.full_info = str(json)
     book.title = json.get('title', '')
     book.subtitle = json.get('subtitle', '')
     pub = json.get('publishers', [])
