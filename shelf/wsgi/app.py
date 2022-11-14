@@ -2,9 +2,9 @@ import os
 from flask import Flask, send_file, redirect, render_template, request, url_for
 
 from shelf.db import db, Author, Tag
-
-from . import commands
 from shelf.db.book import Book
+from . import commands
+
 
 _basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -13,6 +13,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(_basedir, 's
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
+
 
 @app.route('/add', methods=('GET', 'POST'))
 def view_add():
@@ -32,9 +33,7 @@ def view_list():
 
 @app.route('/tags')
 def view_tags():
-    tags = Tag.query.all()
-    for t in tags:
-        print(len(t.books))
+    tags = Tag.query.order_by(Tag.name).all()
     return render_template('tags.html', tags=tags)
 
 @app.route('/book/<int:book_id>')
