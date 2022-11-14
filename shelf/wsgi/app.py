@@ -55,6 +55,17 @@ def view_file(book_id):
         return send_file(path, download_name=book.filename)
     return render_template('missing_file.html', book=book)
 
+@app.route('/delete/<int:book_id>')
+def view_delete(book_id):
+    book = Book.query.get_or_404(book_id)
+    confirmed = request.args.get('confirm') == 'True'
+    if not confirmed:
+        return render_template('delete.html', book=book)
+    else:
+        print(f'Deleting {book.title}...')
+        return redirect(url_for('view_list'))
+
+
 @app.route('/thumbnail/<int:book_id>')
 def view_thumbnail(book_id):
     book = Book.query.get_or_404(book_id)

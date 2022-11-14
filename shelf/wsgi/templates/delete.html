@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h3>{% block title %} Delete book {% endblock %}</h3>
+
+<div style="color:red;font-size:14pt;">Do you really want to delete <b>{{ book.title }}</b>?<br />
+This action cannot be undone!<br />
+<br />
+<a href="{{ url_for('view_edit', book_id=book.id) }}">Cancel</a> - <a href="{{ url_for('view_delete', book_id=book.id, confirm=true) }}"><b>DELETE</b></a></div>
+
+{% endblock %}
