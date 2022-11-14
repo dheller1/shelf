@@ -44,7 +44,7 @@ def view_book(book_id):
 @app.route('/edit/<int:book_id>')
 def view_edit(book_id):
     book = Book.query.get_or_404(book_id)
-    all_tags = Tag.query.all()
+    all_tags = Tag.query.order_by(Tag.name).all()
     return render_template('edit.html', book=book, all_tags=all_tags)
 
 @app.route('/file/<int:book_id>')
