@@ -8,6 +8,7 @@ import requests
 from shelf.core.constants import UPLOAD_FOLDER
 from shelf.core.isbn import ISBN
 from shelf.db import Book, db, Author
+from shelf.db.util.isbn_cache import ISBNCache
 
 
 def add_book(db, request, logger=None):
@@ -50,7 +51,7 @@ def add_book(db, request, logger=None):
         isbn = _find_isbn_in_pdf(os.path.join(target_dir, file.filename))
         if isbn:
             new_book.isbn = isbn.digits()
-            info_json = _get_book_info(isbn)
+            info_json = ISBNCache.get(new_book.isbn)
             if info_json:
                 _fill_book_info_from_json(new_book, info_json, logger)
                 db.session.add(new_book)
@@ -67,14 +68,6 @@ def _find_isbn_in_pdf(filename):
         isbn = ISBN.find(text)
         if isbn:
             return isbn
-    return None
-
-
-def _get_book_info(isbn):
-    url = f'https://openlibrary.org/isbn/{isbn.digits()}.json'
-    r = requests.get(url)
-    if r.status_code == 200:
-        return r.json()
     return None
 
 
