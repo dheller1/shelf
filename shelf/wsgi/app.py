@@ -39,7 +39,8 @@ def view_book(book_id):
 @app.route('/edit/<int:book_id>')
 def view_edit(book_id):
     book = Book.query.get_or_404(book_id)
-    return render_template('edit.html', book=book)
+    all_tags = Tag.query.all()
+    return render_template('edit.html', book=book, all_tags=all_tags)
 
 @app.route('/file/<int:book_id>')
 def view_file(book_id):
@@ -70,8 +71,15 @@ def do_save():
         author_str = author_str.replace(';', '\n')
         authors = [a.strip() for a in author_str.split('\n')]
 
-        tags = [t.strip() for t in request.form['tags'].splitlines()]
-        book.tags = [Tag.get_or_create(t) for t in tags if t != '']
+        tag_ids = { int(tag_id) for tag_id in request.form.getlist('existing_tags') }
+
+        new_tag_names = [t.strip() for t in request.form['new_tags'].splitlines()]
+        for name in new_tag_names:
+            if name:
+                tag = Tag.get_or_create(name)
+                tag_ids.add(tag.id)
+
+        book.tags = Tag.get(tag_ids)
 
         book.title = t
         book.subtitle = st

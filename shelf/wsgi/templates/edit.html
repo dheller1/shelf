@@ -11,10 +11,21 @@
 			<td valign="top"><b>Title:</b></td>
 			<td><input type="text" name="title" size="80" value="{{ book.title}}" /></td>
 			<td rowspan="4">
-				Tags:<br />
-				<textarea name="tags" rows="10" cols="40">{% for tag in book.tags %}{{tag.name}}
-{% endfor %}</textarea><br />
-				<small>(enter one tag per line)</small>
+				<b>Tags:</b><br />
+				<table>
+					<tr>
+						<td><small>(existing)</small></td>
+						<td><small>(new: enter one tag per line)</small></td>
+					</tr>
+					<tr>
+						<td valign="top">
+							<select name="existing_tags" size="9" multiple>
+							{% for tag in all_tags %}<option value="{{ tag.id }}" {% if tag in book.tags %}selected{% endif %}>{{ tag.name }}</option>{% endfor %}
+							</select>
+						</td>
+						<td valign="top"><textarea name="new_tags" rows="10" cols="25"></textarea></td>
+					</tr>
+				</table>
 			</td>
 		</tr>
 		<tr>

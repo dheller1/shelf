@@ -18,3 +18,7 @@ class Tag(db.Model):
         db.session.add(t)
         db.session.commit()
         return t
+
+    @staticmethod
+    def get(ids):
+        return [tag for tag in Tag.query.filter(Tag.id.in_(list(ids)))]
