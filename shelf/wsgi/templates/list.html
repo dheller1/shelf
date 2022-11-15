@@ -3,6 +3,10 @@
 {% block content %}
 <h3>{% block title %} List of Books {% endblock %}</h3>
 
+{% if tags|length > 0 %}
+<b>Filtered by tags:</b> {% for tag in tags %}<u>{{ tag.name }}</u>{% if not loop.last %}, {% endif %}{% endfor %}<br /><br />
+{% endif %}
+
 <table border="1">
 	<tr>
 		<td><b>Title</b></td>

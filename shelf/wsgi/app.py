@@ -28,8 +28,20 @@ def view_add():
 
 @app.route('/list')
 def view_list():
-    books = Book.query.all()
-    return render_template('list.html', books=books)
+    tag_ids = request.args.getlist('tag')
+    if tag_ids:
+        filter_tags = Tag.get(tag_ids)
+        books = set()
+
+        # FIXME: Is there a better way to do this in one query, instead of one query per tag?
+        for t in filter_tags:
+            tagged_books = Book.query.filter(Book.tags.contains(t)).all()
+            books.update(tagged_books)
+        books = list(books)
+        return render_template('list.html', books=books, tags=filter_tags)
+    else:
+        books = Book.query.all()
+        return render_template('list.html', books=books, tags=[])
 
 @app.route('/tags')
 def view_tags():

@@ -23,7 +23,7 @@ class Book(db.Model):
     tags = db.relationship('Tag', secondary=tagged_with, lazy='subquery', backref=db.backref('books', lazy=True))
 
     def __repr__(self):
-        return f'Book({self.title})'
+        return f'Book#{self.id}({self.title})'
 
     def upload_dir(self):
         return os.path.join(UPLOAD_FOLDER, str(self.id))

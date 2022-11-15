@@ -4,6 +4,6 @@
 <h3>{% block title %} List of Tags {% endblock %}</h3>
 
 <ul>
-	{% for tag in tags %}<li><a href="#">{{ tag.name }}</a> ({{ tag.books|length }})</li>{% endfor %}
+	{% for tag in tags %}<li><a href="{{ url_for('view_list', tag=tag.id) }}">{{ tag.name }}</a> ({{ tag.books|length }})</li>{% endfor %}
 </ul>
 {% endblock %}
