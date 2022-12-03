@@ -82,7 +82,7 @@ def _get_author_info(url):
 def _generate_thumbnail(source_path, target_path, logger=None):
     """ Generates a .png thumbnail from the first page of the given PDF file. """
     max_size = '240x320'
-    cmdline = f'magick convert -adaptive-resize {max_size} {source_path}[0] {target_path}'
+    cmdline = f'magick convert -adaptive-resize {max_size} "{source_path}"[0] "{target_path}"'
     try:
         subprocess.check_call(cmdline)
         return True
