@@ -74,7 +74,9 @@ def view_delete(book_id):
     if not confirmed:
         return render_template('delete.html', book=book)
     else:
-        print(f'Deleting {book.title}...')
+        book.delete_files(app.logger)
+        db.session.delete(book)
+        db.session.commit()
         return redirect(url_for('view_list'))
 
 

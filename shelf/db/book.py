@@ -5,6 +5,8 @@ from .tagged_with import tagged_with
 from .written_by import written_by
 
 from shelf.core.constants import UPLOAD_FOLDER
+from ..core.util import try_delete_file, try_delete_directory
+
 
 class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -37,6 +39,14 @@ class Book(db.Model):
         if self.thumb_filename:
             return os.path.join(self.upload_dir(), self.thumb_filename)
         return ''
+
+    def delete_files(self, logger):
+        if self.is_file_available:
+            try_delete_file(self.abs_filepath(), logger)
+        if self.is_thumbnail_available:
+            try_delete_file(self.abs_thumbnail_path(), logger)
+        if os.path.isdir(self.upload_dir()):
+            try_delete_directory(self.upload_dir(), logger)
 
     @property
     def is_file_available(self):
