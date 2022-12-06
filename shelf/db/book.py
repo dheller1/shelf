@@ -5,7 +5,7 @@ from .tagged_with import tagged_with
 from .written_by import written_by
 
 from shelf.core.constants import UPLOAD_FOLDER
-from ..core.util import try_delete_file, try_delete_directory
+from shelf.core.util import try_delete_file, try_delete_directory
 
 
 class Book(db.Model):
@@ -23,6 +23,7 @@ class Book(db.Model):
 
     authors = db.relationship('Author', secondary=written_by, lazy='subquery', backref=db.backref('books', lazy=True))
     tags = db.relationship('Tag', secondary=tagged_with, lazy='subquery', backref=db.backref('books', lazy=True))
+    attachments = db.relationship('Attachment', backref='book')
 
     def __repr__(self):
         return f'Book#{self.id}({self.title})'

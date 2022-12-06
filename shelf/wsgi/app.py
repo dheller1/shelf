@@ -1,7 +1,7 @@
 import os
 from flask import Flask, send_file, redirect, render_template, request, url_for
 
-from shelf.db import db, Author, Tag
+from shelf.db import db, Author, Tag, Attachment
 from shelf.db.book import Book
 from . import commands
 
@@ -26,6 +26,7 @@ def view_add():
     else:
         return render_template('add.html')
 
+
 @app.route('/list')
 def view_list():
     tag_ids = request.args.getlist('tag')
@@ -43,21 +44,25 @@ def view_list():
         books = Book.query.all()
         return render_template('list.html', books=books, tags=[])
 
+
 @app.route('/tags')
 def view_tags():
     tags = Tag.query.order_by(Tag.name).all()
     return render_template('tags.html', tags=tags)
+
 
 @app.route('/book/<int:book_id>')
 def view_book(book_id):
     book = Book.query.get_or_404(book_id)
     return render_template('book.html', book=book)
 
+
 @app.route('/edit/<int:book_id>')
 def view_edit(book_id):
     book = Book.query.get_or_404(book_id)
     all_tags = Tag.query.order_by(Tag.name).all()
     return render_template('edit.html', book=book, all_tags=all_tags)
+
 
 @app.route('/file/<int:book_id>')
 def view_file(book_id):
@@ -66,6 +71,7 @@ def view_file(book_id):
     if path and os.path.isfile(path):
         return send_file(path, download_name=book.filename)
     return render_template('missing_file.html', book=book)
+
 
 @app.route('/delete/<int:book_id>')
 def view_delete(book_id):
@@ -87,6 +93,24 @@ def view_thumbnail(book_id):
     if path and os.path.isfile(path):
         return send_file(path, download_name=book.thumb_filename)
 
+
+@app.route('/attachment/<int:attachment_id>')
+def view_attachment(attachment_id):
+    atch = Attachment.query.get_or_404(attachment_id)
+    path = atch.abs_filepath()
+    if path and os.path.isfile(path):
+        return send_file(path, download_name=atch.name)
+    return render_template('missing_file.html', book=atch.book)
+
+
+@app.route('/attachment_thumbnail/<int:attachment_id>')
+def view_attachment_thumbnail(attachment_id):
+    atch = Attachment.query.get_or_404(attachment_id)
+    path = atch.abs_thumbnail_path()
+    if path and os.path.isfile(path):
+        return send_file(path, download_name=atch.thumb_filename)
+
+
 @app.route('/save', methods=('POST', ))
 def do_save():
     if request.method == 'POST':
@@ -96,6 +120,10 @@ def do_save():
         st = request.form['subtitle']
         ed = request.form['edition']
         author_str = request.form['authors']
+
+        new_attachment = request.files['attachment_file']
+        if new_attachment and new_attachment.filename:
+            commands.add_attachment(book, new_attachment)
 
         author_str = author_str.replace(',', '\n')
         author_str = author_str.replace(';', '\n')

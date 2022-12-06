@@ -7,7 +7,7 @@ import requests
 
 from shelf.core.constants import UPLOAD_FOLDER
 from shelf.core.isbn import ISBN
-from shelf.db import Book, db, Author
+from shelf.db import Book, db, Author, Attachment
 from shelf.db.util.isbn_cache import ISBNCache
 
 
@@ -59,6 +59,31 @@ def add_book(db, request, logger=None):
 
         return new_book
     return None
+
+
+def add_attachment(book, file):
+    assert file.filename
+    basename, ext = os.path.splitext(file.filename)
+
+    atch = Attachment(book_id=book.id, filename=file.filename, name=basename)
+
+    target_dir = os.path.join(UPLOAD_FOLDER, str(book.id))
+    if not os.path.isdir(target_dir):
+        os.mkdir(target_dir)
+
+    fullpath = os.path.join(target_dir, file.filename)
+    file.save(fullpath)
+
+    if ext.lower() == '.pdf':
+        fullbase, _ = os.path.splitext(fullpath)
+        thumb_file = fullbase + '.png'
+        thumb_success = _generate_thumbnail(fullpath, thumb_file)
+        if thumb_success and os.path.isfile(thumb_file):
+            atch.thumb_filename = thumb_file
+
+    db.session.add(atch)
+    db.session.commit()
+    return atch
 
 
 def _find_isbn_in_pdf(filename):

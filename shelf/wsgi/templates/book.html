@@ -24,11 +24,22 @@
     <td>
         <h2>{{ book.title }}</h2>
         <h4>{{ book.subtitle }}</h4>
-        <div>written by: {% for author in book.authors %}<u>{{ author.name }}</u>{% if not loop.last %}, {% endif %}{% endfor %}</div>
+        {% if book.authors %}<div>written by: {% for author in book.authors %}<u>{{ author.name }}</u>{% if not loop.last %}, {% endif %}{% endfor %}</div>{% endif %}
         <p>{{ book.edition }}</p>
     </td>
 </tr>
-
 </table>
+
+{% if book.attachments %}
+<table border="1">
+    <tr><td colspan="2"><b>{{ book.attachments|length }}</b> attachment(s)</td></tr>
+{%for atch in book.attachments %}
+    <tr>
+        <td><img src="{{ url_for('view_attachment_thumbnail', attachment_id=atch.id) }}" height="60" /></td>
+        <td><a href="{{ url_for('view_attachment', attachment_id=atch.id) }}" >{{ atch.name }}</a></td>
+    </tr>
+{% endfor %}
+</table>
+{% endif %}
 
 {% endblock %}
