@@ -78,7 +78,7 @@ def view_delete(book_id):
     book = Book.query.get_or_404(book_id)
     confirmed = request.args.get('confirm') == 'True'
     if not confirmed:
-        return render_template('delete.html', book=book)
+        return render_template('delete.html', book=book, is_attachment=False)
     else:
         book.delete_files(app.logger)
         db.session.delete(book)
@@ -101,6 +101,19 @@ def view_attachment(attachment_id):
     if path and os.path.isfile(path):
         return send_file(path, download_name=atch.name)
     return render_template('missing_file.html', book=atch.book)
+
+
+@app.route('/delete_attachment/<int:attachment_id>')
+def delete_attachment(attachment_id):
+    atch = Attachment.query.get_or_404(attachment_id)
+    confirmed = request.args.get('confirm') == 'True'
+    if not confirmed:
+        return render_template('delete.html', book=book, is_attachment=True)
+    else:
+        #atch.delete_files(app.logger)
+        db.session.delete(atch)
+        db.session.commit()
+        return redirect(url_for('view_edit', book_id=atch.book_id))
 
 
 @app.route('/attachment_thumbnail/<int:attachment_id>')

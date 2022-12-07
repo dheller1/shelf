@@ -46,11 +46,18 @@
 		<tr>
 			<td colspan="3">Attachments:
 				<div>Add attachment <input type="file" name="attachment_file"/></div>
+				{% if book.attachments %}
 				<table border="1">
+					<tr><td colspan="3"><b>{{ book.attachments|length }}</b> attachment(s)</td></tr>
+					{% for atch in book.attachments %}
 					<tr>
-						<td></td>
+						<td><img src="{{ url_for('view_attachment_thumbnail', attachment_id=atch.id) }}" height="60" /></td>
+						<td><input type="text" name="attachment_{{atch.id}}_name" value="{{ atch.name }}" size="80" /></td>
+						<td><a href="{{ url_for('delete_attachment', attachment_id=atch.id) }}">delete</a></td>
 					</tr>
+					{% endfor %}
 				</table>
+				{% endif %}
 			</td>
 		</tr>
 	</table>
